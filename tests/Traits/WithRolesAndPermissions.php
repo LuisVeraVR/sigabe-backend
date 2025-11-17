@@ -150,6 +150,9 @@ trait WithRolesAndPermissions
             'loans.create',
             'loans.approve',
             'loans.return',
+            'reservations.view',
+            'reservations.create',
+            'reservations.approve',
             'spaces.view',
         ];
 

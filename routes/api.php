@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Equipment\EquipmentMaintenanceController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentTypeController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
 use App\Http\Controllers\Api\V1\Loans\LoanController;
+use App\Http\Controllers\Api\V1\Reservations\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -261,6 +262,70 @@ Route::prefix('v1')->group(function () {
             Route::get('/stats/summary', [LoanController::class, 'statistics'])
                 ->middleware('permission:loans.view')
                 ->name('loans.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Reservas
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('reservations')->group(function () {
+            // Listar reservas
+            Route::get('/', [ReservationController::class, 'index'])
+                ->middleware('permission:reservations.view')
+                ->name('reservations.index');
+
+            // Ver detalle de reserva
+            Route::get('/{id}', [ReservationController::class, 'show'])
+                ->middleware('permission:reservations.view')
+                ->name('reservations.show');
+
+            // Crear solicitud de reserva
+            Route::post('/', [ReservationController::class, 'store'])
+                ->middleware('permission:reservations.create')
+                ->name('reservations.store');
+
+            // Aprobar reserva
+            Route::post('/{id}/approve', [ReservationController::class, 'approve'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.approve');
+
+            // Rechazar reserva
+            Route::post('/{id}/reject', [ReservationController::class, 'reject'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.reject');
+
+            // Cancelar reserva
+            Route::post('/{id}/cancel', [ReservationController::class, 'cancel'])
+                ->name('reservations.cancel');
+
+            // Activar reserva
+            Route::post('/{id}/activate', [ReservationController::class, 'activate'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.activate');
+
+            // Completar reserva
+            Route::post('/{id}/complete', [ReservationController::class, 'complete'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.complete');
+
+            // Convertir a préstamo
+            Route::post('/{id}/convert-to-loan', [ReservationController::class, 'convertToLoan'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.convert-to-loan');
+
+            // Eliminar reserva
+            Route::delete('/{id}', [ReservationController::class, 'destroy'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.destroy');
+
+            // Vistas especiales
+            Route::get('/me/list', [ReservationController::class, 'myReservations'])
+                ->name('reservations.my-reservations');
+
+            Route::get('/pending/list', [ReservationController::class, 'pending'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.pending');
         });
     });
 });
