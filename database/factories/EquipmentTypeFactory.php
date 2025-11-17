@@ -28,7 +28,7 @@ class EquipmentTypeFactory extends Factory
         self::$counter++;
 
         return [
-            'name' => $type['name'],
+            'name' => $type['name'] . ' ' . self::$counter,
             'slug' => \Illuminate\Support\Str::slug($type['name']) . '-' . self::$counter,
             'description' => fake()->sentence(),
             'icon' => $type['icon'],

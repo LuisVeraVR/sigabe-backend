@@ -28,7 +28,7 @@ class EquipmentBrandFactory extends Factory
         self::$counter++;
 
         return [
-            'name' => $brand['name'],
+            'name' => $brand['name'] . ' ' . self::$counter,
             'slug' => \Illuminate\Support\Str::slug($brand['name']) . '-' . self::$counter,
             'logo_url' => null,
             'website' => 'https://www.' . strtolower($brand['name']) . '.com',
