@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Equipment\EquipmentController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentMaintenanceController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentTypeController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
+use App\Http\Controllers\Api\V1\Loans\LoanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -206,6 +207,60 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{id}', [EquipmentBrandController::class, 'destroy'])
                 ->middleware('permission:settings.edit')
                 ->name('equipment-brands.destroy');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Préstamos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('loans')->group(function () {
+            // Listar préstamos
+            Route::get('/', [LoanController::class, 'index'])
+                ->middleware('permission:loans.view')
+                ->name('loans.index');
+
+            // Ver detalle de préstamo
+            Route::get('/{id}', [LoanController::class, 'show'])
+                ->middleware('permission:loans.view')
+                ->name('loans.show');
+
+            // Crear solicitud de préstamo
+            Route::post('/', [LoanController::class, 'store'])
+                ->middleware('permission:loans.create')
+                ->name('loans.store');
+
+            // Aprobar préstamo
+            Route::post('/{id}/approve', [LoanController::class, 'approve'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.approve');
+
+            // Rechazar préstamo
+            Route::post('/{id}/reject', [LoanController::class, 'reject'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.reject');
+
+            // Devolver equipo
+            Route::post('/{id}/return', [LoanController::class, 'return'])
+                ->middleware('permission:loans.return')
+                ->name('loans.return');
+
+            // Vistas especiales
+            Route::get('/me/active', [LoanController::class, 'myLoans'])
+                ->name('loans.my-loans');
+
+            Route::get('/pending/list', [LoanController::class, 'pending'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.pending');
+
+            Route::get('/overdue/list', [LoanController::class, 'overdue'])
+                ->middleware('permission:loans.view')
+                ->name('loans.overdue');
+
+            // Estadísticas
+            Route::get('/stats/summary', [LoanController::class, 'statistics'])
+                ->middleware('permission:loans.view')
+                ->name('loans.statistics');
         });
     });
 });
