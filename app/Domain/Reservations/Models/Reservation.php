@@ -8,6 +8,7 @@ use App\Domain\Equipment\Models\Equipment;
 use App\Domain\Loans\Models\Loan;
 use App\Domain\Reservations\Enums\ReservationStatus;
 use App\Domain\Users\Models\User;
+use Database\Factories\ReservationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -161,6 +162,6 @@ class Reservation extends Model
 
     public function getDurationInDays(): int
     {
-        return $this->start_date->diffInDays($this->end_date) + 1;
+        return (int) ($this->start_date->diffInDays($this->end_date) + 1);
     }
 }

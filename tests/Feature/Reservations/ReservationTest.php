@@ -381,7 +381,7 @@ describe('Reservation Activation', function () {
         // Verificar que el equipo cambió de estado
         $this->assertDatabaseHas('equipment', [
             'id' => $reservation->equipment_id,
-            'status' => EquipmentStatus::IN_USE->value,
+            'status' => EquipmentStatus::ON_LOAN->value,
         ]);
     });
 
@@ -420,7 +420,7 @@ describe('Reservation Completion', function () {
         $colaborador = User::factory()->create();
         $colaborador->assignRole(UserRole::COLABORADOR->value);
 
-        $equipment = Equipment::factory()->create(['status' => EquipmentStatus::IN_USE]);
+        $equipment = Equipment::factory()->create(['status' => EquipmentStatus::ON_LOAN]);
 
         $reservation = Reservation::factory()->active()->create([
             'equipment_id' => $equipment->id,

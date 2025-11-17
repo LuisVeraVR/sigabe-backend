@@ -187,7 +187,7 @@ class ReservationService
             ]);
 
             // Actualizar estado del equipo a EN_USO
-            $equipment->update(['status' => EquipmentStatus::IN_USE]);
+            $equipment->update(['status' => EquipmentStatus::ON_LOAN]);
 
             return $reservation->fresh()->load(['user', 'equipment']);
         });
@@ -212,7 +212,7 @@ class ReservationService
 
             // Si el equipo está en uso, marcarlo como disponible
             $equipment = Equipment::findOrFail($reservation->equipment_id);
-            if ($equipment->status === EquipmentStatus::IN_USE) {
+            if ($equipment->status === EquipmentStatus::ON_LOAN) {
                 $equipment->update(['status' => EquipmentStatus::AVAILABLE]);
             }
 
@@ -258,7 +258,7 @@ class ReservationService
             ]);
 
             // Actualizar estado del equipo
-            $equipment->update(['status' => EquipmentStatus::IN_USE]);
+            $equipment->update(['status' => EquipmentStatus::ON_LOAN]);
 
             return $loan->load(['user', 'equipment', 'approvedBy']);
         });
