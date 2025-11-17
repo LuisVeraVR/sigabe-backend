@@ -189,6 +189,7 @@ trait WithRolesAndPermissions
             'loans.create',
             'reservations.view',
             'reservations.create',
+            'incidents.view',
             'incidents.create',
         ];
 

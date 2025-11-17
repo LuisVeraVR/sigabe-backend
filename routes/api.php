@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Equipment\EquipmentTypeController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
 use App\Http\Controllers\Api\V1\Loans\LoanController;
 use App\Http\Controllers\Api\V1\Reservations\ReservationController;
+use App\Http\Controllers\Api\V1\Incidents\IncidentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,6 +327,84 @@ Route::prefix('v1')->group(function () {
             Route::get('/pending/list', [ReservationController::class, 'pending'])
                 ->middleware('permission:reservations.approve')
                 ->name('reservations.pending');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Incidentes
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('incidents')->group(function () {
+            // Listar incidentes
+            Route::get('/', [IncidentController::class, 'index'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.index');
+
+            // Ver detalle de incidente
+            Route::get('/{id}', [IncidentController::class, 'show'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.show');
+
+            // Crear incidente
+            Route::post('/', [IncidentController::class, 'store'])
+                ->middleware('permission:incidents.create')
+                ->name('incidents.store');
+
+            // Asignar incidente
+            Route::post('/{id}/assign', [IncidentController::class, 'assign'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.assign');
+
+            // Desasignar incidente
+            Route::post('/{id}/unassign', [IncidentController::class, 'unassign'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.unassign');
+
+            // Iniciar reparación
+            Route::post('/{id}/start-repair', [IncidentController::class, 'startRepair'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.start-repair');
+
+            // Resolver incidente
+            Route::post('/{id}/resolve', [IncidentController::class, 'resolve'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.resolve');
+
+            // Cerrar incidente
+            Route::post('/{id}/close', [IncidentController::class, 'close'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.close');
+
+            // Reabrir incidente
+            Route::post('/{id}/reopen', [IncidentController::class, 'reopen'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.reopen');
+
+            // Eliminar incidente
+            Route::delete('/{id}', [IncidentController::class, 'destroy'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.destroy');
+
+            // Vistas especiales
+            Route::get('/active/list', [IncidentController::class, 'active'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.active');
+
+            Route::get('/me/list', [IncidentController::class, 'myIncidents'])
+                ->name('incidents.my-incidents');
+
+            Route::get('/assigned-to-me/list', [IncidentController::class, 'assignedToMe'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.assigned-to-me');
+
+            Route::get('/unassigned/list', [IncidentController::class, 'unassigned'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.unassigned');
+
+            // Estadísticas
+            Route::get('/stats/summary', [IncidentController::class, 'statistics'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.statistics');
         });
     });
 });
