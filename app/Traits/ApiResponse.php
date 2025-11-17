@@ -55,7 +55,7 @@ trait ApiResponse
             'success' => true,
             'message' => $message,
             'data' => $paginator->items(),
-            'pagination' => [
+            'meta' => [
                 'total' => $paginator->total(),
                 'per_page' => $paginator->perPage(),
                 'current_page' => $paginator->currentPage(),

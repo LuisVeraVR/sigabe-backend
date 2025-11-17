@@ -56,18 +56,19 @@ class EquipmentService
      */
     public function update(Equipment $equipment, array $data): Equipment
     {
-        $originalData = $equipment->toArray();
-
         $this->repository->update($equipment, $data);
 
         $equipment->refresh();
+
+        // Get only the attributes that were changed
+        $changes = $equipment->getChanges();
 
         AuditLog::log(
             action: 'updated',
             module: 'equipment',
             description: "Equipo actualizado: {$equipment->name}",
             record: $equipment,
-            changes: array_diff_assoc($equipment->toArray(), $originalData)
+            changes: $changes
         );
 
         return $equipment;
