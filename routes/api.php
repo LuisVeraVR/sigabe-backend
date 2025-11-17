@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
 use App\Http\Controllers\Api\V1\Loans\LoanController;
 use App\Http\Controllers\Api\V1\Reservations\ReservationController;
 use App\Http\Controllers\Api\V1\Incidents\IncidentController;
+use App\Http\Controllers\Api\V1\Spaces\SpaceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -405,6 +406,65 @@ Route::prefix('v1')->group(function () {
             Route::get('/stats/summary', [IncidentController::class, 'statistics'])
                 ->middleware('permission:incidents.resolve')
                 ->name('incidents.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Spaces (Espacios) - Gestión de espacios físicos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('spaces')->group(function () {
+            // CRUD básico
+            Route::get('/', [SpaceController::class, 'index'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.index');
+
+            Route::get('/{id}', [SpaceController::class, 'show'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.show');
+
+            Route::post('/', [SpaceController::class, 'store'])
+                ->middleware('permission:spaces.create')
+                ->name('spaces.store');
+
+            Route::put('/{id}', [SpaceController::class, 'update'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.update');
+
+            Route::delete('/{id}', [SpaceController::class, 'destroy'])
+                ->middleware('permission:spaces.delete')
+                ->name('spaces.destroy');
+
+            // Gestión de estados
+            Route::post('/{id}/mark-available', [SpaceController::class, 'markAsAvailable'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-available');
+
+            Route::post('/{id}/mark-unavailable', [SpaceController::class, 'markAsUnavailable'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-unavailable');
+
+            Route::post('/{id}/mark-maintenance', [SpaceController::class, 'markAsInMaintenance'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-maintenance');
+
+            // Vistas especiales
+            Route::get('/available/list', [SpaceController::class, 'available'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.available');
+
+            // Estadísticas y utilidades
+            Route::get('/stats/summary', [SpaceController::class, 'statistics'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.statistics');
+
+            Route::get('/utilities/buildings', [SpaceController::class, 'buildings'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.buildings');
+
+            Route::get('/utilities/floors', [SpaceController::class, 'floors'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.floors');
         });
     });
 });
