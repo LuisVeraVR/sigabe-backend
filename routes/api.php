@@ -1,0 +1,237 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HealthCheckController;
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Equipment\EquipmentController;
+use App\Http\Controllers\Api\V1\Equipment\EquipmentMaintenanceController;
+use App\Http\Controllers\Api\V1\Equipment\EquipmentTypeController;
+use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes - SIGABE
+|--------------------------------------------------------------------------
+*/
+
+// Health Check - Sin autenticación
+Route::get('/health', HealthCheckController::class)
+    ->name('health.check');
+
+/*
+|--------------------------------------------------------------------------
+| API V1 Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rutas de Autenticación - Públicas
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('auth')->group(function () {
+        // Login - Con rate limiting
+        Route::post('/login', [AuthController::class, 'login'])
+            ->middleware('throttle:login')
+            ->name('auth.login');
+
+        // Rutas protegidas con Sanctum
+        Route::middleware(['auth:sanctum'])->group(function () {
+            Route::post('/logout', [AuthController::class, 'logout'])
+                ->name('auth.logout');
+
+            Route::post('/logout-all', [AuthController::class, 'logoutAll'])
+                ->name('auth.logout-all');
+
+            Route::get('/me', [AuthController::class, 'me'])
+                ->name('auth.me');
+        });
+
+        // Register - Solo para administradores
+        Route::post('/register', [AuthController::class, 'register'])
+            ->middleware(['auth:sanctum', 'permission:users.create'])
+            ->name('auth.register');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rutas Protegidas con Sanctum
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth:sanctum'])->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Equipos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('equipment')->group(function () {
+            // CRUD de equipos
+            Route::get('/', [EquipmentController::class, 'index'])
+                ->middleware('permission:equipment.view')
+                ->name('equipment.index');
+
+            Route::get('/{id}', [EquipmentController::class, 'show'])
+                ->middleware('permission:equipment.view')
+                ->name('equipment.show');
+
+            Route::post('/', [EquipmentController::class, 'store'])
+                ->middleware('permission:equipment.create')
+                ->name('equipment.store');
+
+            Route::put('/{id}', [EquipmentController::class, 'update'])
+                ->middleware('permission:equipment.edit')
+                ->name('equipment.update');
+
+            Route::delete('/{id}', [EquipmentController::class, 'destroy'])
+                ->middleware('permission:equipment.delete')
+                ->name('equipment.destroy');
+
+            // Acciones especiales
+            Route::patch('/{id}/status', [EquipmentController::class, 'changeStatus'])
+                ->middleware('permission:equipment.edit')
+                ->name('equipment.change-status');
+
+            Route::get('/{id}/availability', [EquipmentController::class, 'checkAvailability'])
+                ->middleware('permission:equipment.view')
+                ->name('equipment.check-availability');
+
+            Route::get('/{id}/history', [EquipmentController::class, 'history'])
+                ->middleware('permission:equipment.view')
+                ->name('equipment.history');
+
+            // Estadísticas
+            Route::get('/stats/summary', [EquipmentController::class, 'statistics'])
+                ->middleware('permission:reports.view')
+                ->name('equipment.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mantenimientos de Equipos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('maintenances')->group(function () {
+            Route::get('/', [EquipmentMaintenanceController::class, 'index'])
+                ->middleware('permission:equipment.view')
+                ->name('maintenances.index');
+
+            Route::get('/{id}', [EquipmentMaintenanceController::class, 'show'])
+                ->middleware('permission:equipment.view')
+                ->name('maintenances.show');
+
+            Route::post('/', [EquipmentMaintenanceController::class, 'store'])
+                ->middleware('permission:equipment.maintenance')
+                ->name('maintenances.store');
+
+            Route::put('/{id}', [EquipmentMaintenanceController::class, 'update'])
+                ->middleware('permission:equipment.maintenance')
+                ->name('maintenances.update');
+
+            // Acciones de mantenimiento
+            Route::post('/{id}/start', [EquipmentMaintenanceController::class, 'start'])
+                ->middleware('permission:equipment.maintenance')
+                ->name('maintenances.start');
+
+            Route::post('/{id}/complete', [EquipmentMaintenanceController::class, 'complete'])
+                ->middleware('permission:equipment.maintenance')
+                ->name('maintenances.complete');
+
+            Route::post('/{id}/cancel', [EquipmentMaintenanceController::class, 'cancel'])
+                ->middleware('permission:equipment.maintenance')
+                ->name('maintenances.cancel');
+
+            // Vistas especiales
+            Route::get('/upcoming/list', [EquipmentMaintenanceController::class, 'upcoming'])
+                ->middleware('permission:equipment.view')
+                ->name('maintenances.upcoming');
+
+            Route::get('/overdue/list', [EquipmentMaintenanceController::class, 'overdue'])
+                ->middleware('permission:equipment.view')
+                ->name('maintenances.overdue');
+
+            Route::get('/stats/summary', [EquipmentMaintenanceController::class, 'statistics'])
+                ->middleware('permission:reports.view')
+                ->name('maintenances.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tipos de Equipos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('equipment-types')->group(function () {
+            Route::get('/', [EquipmentTypeController::class, 'index'])
+                ->name('equipment-types.index');
+
+            Route::get('/{id}', [EquipmentTypeController::class, 'show'])
+                ->name('equipment-types.show');
+
+            Route::post('/', [EquipmentTypeController::class, 'store'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-types.store');
+
+            Route::put('/{id}', [EquipmentTypeController::class, 'update'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-types.update');
+
+            Route::delete('/{id}', [EquipmentTypeController::class, 'destroy'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-types.destroy');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Marcas de Equipos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('equipment-brands')->group(function () {
+            Route::get('/', [EquipmentBrandController::class, 'index'])
+                ->name('equipment-brands.index');
+
+            Route::get('/{id}', [EquipmentBrandController::class, 'show'])
+                ->name('equipment-brands.show');
+
+            Route::post('/', [EquipmentBrandController::class, 'store'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-brands.store');
+
+            Route::put('/{id}', [EquipmentBrandController::class, 'update'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-brands.update');
+
+            Route::delete('/{id}', [EquipmentBrandController::class, 'destroy'])
+                ->middleware('permission:settings.edit')
+                ->name('equipment-brands.destroy');
+        });
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| External API Routes - API Pública con API Key
+|--------------------------------------------------------------------------
+*/
+Route::prefix('external/v1')->middleware(['api.key', 'throttle:external-api'])->group(function () {
+
+    // Equipos públicos
+    Route::get('/equipment', [EquipmentController::class, 'index'])
+        ->middleware('api.key:equipment')
+        ->name('external.equipment.index');
+
+    Route::get('/equipment/{id}', [EquipmentController::class, 'show'])
+        ->middleware('api.key:equipment')
+        ->name('external.equipment.show');
+
+    Route::get('/equipment/{id}/availability', [EquipmentController::class, 'checkAvailability'])
+        ->middleware('api.key:equipment')
+        ->name('external.equipment.availability');
+
+    // Tipos de equipos
+    Route::get('/equipment-types', [EquipmentTypeController::class, 'index'])
+        ->middleware('api.key:equipment')
+        ->name('external.equipment-types.index');
+});
