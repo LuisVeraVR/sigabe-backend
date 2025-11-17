@@ -64,11 +64,27 @@ class Equipment extends Model
     }
 
     /**
+     * Alias para type() - usado por el Repository
+     */
+    public function equipmentType(): BelongsTo
+    {
+        return $this->type();
+    }
+
+    /**
      * Relación: Pertenece a una marca
      */
     public function brand(): BelongsTo
     {
         return $this->belongsTo(EquipmentBrand::class, 'equipment_brand_id');
+    }
+
+    /**
+     * Alias para brand() - usado por el Repository
+     */
+    public function equipmentBrand(): BelongsTo
+    {
+        return $this->brand();
     }
 
     /**
