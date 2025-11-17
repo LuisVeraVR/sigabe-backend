@@ -164,4 +164,12 @@ class Reservation extends Model
     {
         return (int) ($this->start_date->diffInDays($this->end_date) + 1);
     }
+
+    /**
+     * Factory
+     */
+    protected static function newFactory()
+    {
+        return ReservationFactory::new();
+    }
 }
