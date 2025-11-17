@@ -403,7 +403,7 @@ Route::prefix('v1')->group(function () {
 
             // Estadísticas
             Route::get('/stats/summary', [IncidentController::class, 'statistics'])
-                ->middleware('permission:incidents.view')
+                ->middleware('permission:incidents.resolve')
                 ->name('incidents.statistics');
         });
     });

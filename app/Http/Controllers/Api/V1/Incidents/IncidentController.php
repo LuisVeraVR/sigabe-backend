@@ -287,7 +287,7 @@ class IncidentController extends Controller
      */
     public function statistics(): JsonResponse
     {
-        $this->authorize('incidents.view');
+        $this->authorize('incidents.resolve');
 
         $stats = $this->service->getStatistics();
 

@@ -131,18 +131,20 @@ class IncidentRepository
         return [
             'total' => Incident::count(),
             'active' => Incident::active()->count(),
-            'reportado' => Incident::reportado()->count(),
-            'en_revision' => Incident::enRevision()->count(),
-            'en_reparacion' => Incident::enReparacion()->count(),
-            'resuelto' => Incident::resuelto()->count(),
-            'cerrado' => Incident::cerrado()->count(),
-            'unassigned' => Incident::unassigned()->active()->count(),
+            'by_status' => [
+                'reportado' => Incident::reportado()->count(),
+                'en_revision' => Incident::enRevision()->count(),
+                'en_reparacion' => Incident::enReparacion()->count(),
+                'resuelto' => Incident::resuelto()->count(),
+                'cerrado' => Incident::cerrado()->count(),
+            ],
             'by_priority' => [
                 'critica' => Incident::byPriority(IncidentPriority::CRITICA)->active()->count(),
                 'alta' => Incident::byPriority(IncidentPriority::ALTA)->active()->count(),
                 'media' => Incident::byPriority(IncidentPriority::MEDIA)->active()->count(),
                 'baja' => Incident::byPriority(IncidentPriority::BAJA)->active()->count(),
             ],
+            'unassigned' => Incident::unassigned()->active()->count(),
         ];
     }
 }

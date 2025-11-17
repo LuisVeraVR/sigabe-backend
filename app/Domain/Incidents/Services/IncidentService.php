@@ -169,12 +169,9 @@ class IncidentService
                 throw new \Exception('Solo se pueden reabrir incidentes cerrados');
             }
 
-            $status = $incident->isAssigned()
-                ? IncidentStatus::EN_REVISION
-                : IncidentStatus::REPORTADO;
-
             $this->repository->update($incident, [
-                'status' => $status,
+                'status' => IncidentStatus::REPORTADO,
+                'assigned_to' => null,
                 'closed_at' => null,
                 'resolved_at' => null,
                 'resolution_notes' => null,
