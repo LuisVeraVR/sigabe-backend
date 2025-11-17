@@ -120,7 +120,7 @@ public function findById(int $id): ?Equipment
      */
     public function delete(Equipment $equipment): bool
     {
-        return $equipment->delete();
+        return (bool) $equipment->delete();
     }
 
     /**
