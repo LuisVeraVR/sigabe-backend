@@ -107,9 +107,13 @@ class EquipmentController extends Controller
     /**
      * Eliminar equipo
      */
-        public function destroy(Equipment $equipment): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $this->authorize('equipment.delete'); // ← AHORA SÍ FUNCIONARÁ
+        $equipment = $this->service->findById($id);
+
+        if (!$equipment) {
+            return $this->notFoundResponse('Equipo no encontrado');
+        }
 
         if ($equipment->status === EquipmentStatus::ON_LOAN) {
             return response()->json([
