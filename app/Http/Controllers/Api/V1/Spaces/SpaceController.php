@@ -13,11 +13,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Spaces\CreateSpaceRequest;
 use App\Http\Requests\Spaces\UpdateSpaceRequest;
 use App\Http\Resources\Spaces\SpaceResource;
+use App\Traits\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SpaceController extends Controller
 {
+    use ApiResponse;
+    use AuthorizesRequests;
+
     public function __construct(
         private readonly SpaceService $service
     ) {}
