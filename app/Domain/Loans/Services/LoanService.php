@@ -62,7 +62,7 @@ class LoanService
                 'requested_at' => now(),
             ]);
 
-            return $loan;
+            return $loan->load(['user', 'equipment']);
         });
     }
 

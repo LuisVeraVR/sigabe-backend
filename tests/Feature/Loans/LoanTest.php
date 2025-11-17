@@ -360,7 +360,7 @@ describe('Loan Permissions', function () {
 
     it('admin can approve loans', function () {
         $admin = User::factory()->create();
-        $admin->assignRole(UserRole::ADMIN->value);
+        $admin->assignRole(UserRole::ADMIN_PROGRAMADOR->value);
 
         $loan = Loan::factory()->pending()->create([
             'equipment_id' => Equipment::factory()->create(['status' => EquipmentStatus::AVAILABLE])->id,
