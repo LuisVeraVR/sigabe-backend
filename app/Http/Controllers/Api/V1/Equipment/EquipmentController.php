@@ -118,7 +118,7 @@ class EquipmentController extends Controller
             ], 400);
         }
 
-        $this->service->delete($equipment->id);
+        $this->service->delete($equipment);
 
         return response()->json([
             'success' => true,

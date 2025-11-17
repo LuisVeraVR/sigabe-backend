@@ -18,6 +18,7 @@ enum EquipmentCondition: string
             self::EXCELLENT => 'Excelente',
             self::GOOD      => 'Buena',
             self::FAIR      => 'Regular',
+            self::POOR      => 'Pobre',
             self::DAMAGED   => 'Dañado',
         };
     }
@@ -28,6 +29,7 @@ enum EquipmentCondition: string
             self::EXCELLENT => 'green',
             self::GOOD      => 'blue',
             self::FAIR      => 'yellow',
+            self::POOR      => 'orange',
             self::DAMAGED   => 'red',
         };
     }
@@ -37,7 +39,8 @@ enum EquipmentCondition: string
         return match ($this) {
             self::EXCELLENT,
             self::GOOD,
-            self::FAIR => true,
+            self::FAIR,
+            self::POOR => true,
 
             self::DAMAGED => false,
         };
