@@ -87,7 +87,7 @@ describe('Space CRUD', function () {
                 'name' => 'Otro laboratorio',
             ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     });
 
     it('validates space_type is valid enum value', function () {
