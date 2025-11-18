@@ -1,0 +1,1171 @@
+{
+	"info": {
+		"_postman_id": "sigabe-backend-api",
+		"name": "SIGABE Backend API",
+		"description": "Sistema Integral de Gestión Administrativa de Biblioteca Escolar - API REST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Equipment",
+			"item": [
+				{
+					"name": "List Equipment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment?per_page=15&search=&status=&equipment_type=",
+							"host": ["{{base_url}}"],
+							"path": ["equipment"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "disponible, prestado, mantenimiento, baja"
+								},
+								{
+									"key": "equipment_type",
+									"value": "",
+									"description": "laptop, proyector, tablet, camara, audio, red, otros"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Equipment by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Equipment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"LAP-001\",\n    \"name\": \"Laptop Dell Latitude\",\n    \"equipment_type\": \"laptop\",\n    \"brand\": \"Dell\",\n    \"model\": \"Latitude 5420\",\n    \"serial_number\": \"SN123456789\",\n    \"acquisition_date\": \"2024-01-15\",\n    \"description\": \"Laptop para préstamo estudiantil\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment",
+							"host": ["{{base_url}}"],
+							"path": ["equipment"]
+						}
+					}
+				},
+				{
+					"name": "Update Equipment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop Dell Latitude Actualizada\",\n    \"description\": \"Laptop actualizada con más RAM\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Equipment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Available",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id/mark-available",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id", "mark-available"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id/mark-maintenance",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id", "mark-maintenance"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Decommissioned",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id/mark-decommissioned",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id", "mark-decommissioned"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", "statistics"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Loans",
+			"item": [
+				{
+					"name": "List Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans?per_page=15&status=&user_id=&equipment_id=",
+							"host": ["{{base_url}}"],
+							"path": ["loans"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "pendiente, aprobado, activo, devuelto, rechazado, vencido"
+								},
+								{
+									"key": "user_id",
+									"value": ""
+								},
+								{
+									"key": "equipment_id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Loan by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans/:id",
+							"host": ["{{base_url}}"],
+							"path": ["loans", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Request Loan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"equipment_id\": 1,\n    \"loan_date\": \"2024-11-20\",\n    \"expected_return_date\": \"2024-11-27\",\n    \"notes\": \"Préstamo para proyecto de clase\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans",
+							"host": ["{{base_url}}"],
+							"path": ["loans"]
+						}
+					}
+				},
+				{
+					"name": "Approve Loan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Aprobado para proyecto académico\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/:id/approve",
+							"host": ["{{base_url}}"],
+							"path": ["loans", ":id", "approve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Reject Loan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Equipo no disponible en esas fechas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/:id/reject",
+							"host": ["{{base_url}}"],
+							"path": ["loans", ":id", "reject"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Return Loan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"return_date\": \"2024-11-25\",\n    \"condition\": \"En buen estado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/:id/return",
+							"host": ["{{base_url}}"],
+							"path": ["loans", ":id", "return"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans/my-loans",
+							"host": ["{{base_url}}"],
+							"path": ["loans", "my-loans"]
+						}
+					}
+				},
+				{
+					"name": "Get Active Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans/active",
+							"host": ["{{base_url}}"],
+							"path": ["loans", "active"]
+						}
+					}
+				},
+				{
+					"name": "Get Overdue Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans/overdue",
+							"host": ["{{base_url}}"],
+							"path": ["loans", "overdue"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "List Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations?per_page=15&status=&user_id=&space_id=&start_date=&end_date=",
+							"host": ["{{base_url}}"],
+							"path": ["reservations"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "pendiente, aprobada, activa, completada, cancelada, rechazada"
+								},
+								{
+									"key": "user_id",
+									"value": ""
+								},
+								{
+									"key": "space_id",
+									"value": ""
+								},
+								{
+									"key": "start_date",
+									"value": ""
+								},
+								{
+									"key": "end_date",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Reservation by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"space_id\": 1,\n    \"start_datetime\": \"2024-11-20 09:00:00\",\n    \"end_datetime\": \"2024-11-20 11:00:00\",\n    \"purpose\": \"Reunión de equipo de proyecto\",\n    \"expected_attendees\": 15\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations",
+							"host": ["{{base_url}}"],
+							"path": ["reservations"]
+						}
+					}
+				},
+				{
+					"name": "Update Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"end_datetime\": \"2024-11-20 12:00:00\",\n    \"expected_attendees\": 20\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations/:id",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cancel Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cancellation_reason\": \"Cambio de planes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "cancel"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Approve Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/approve",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "approve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Reject Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rejection_reason\": \"Espacio no disponible\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/reject",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "reject"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Check-in Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/check-in",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "check-in"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Complete Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/complete",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "complete"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/my-reservations",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", "my-reservations"]
+						}
+					}
+				},
+				{
+					"name": "Get Available Spaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/available-spaces?start_datetime=2024-11-20 09:00:00&end_datetime=2024-11-20 11:00:00&space_type=",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", "available-spaces"],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-11-20 09:00:00"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-11-20 11:00:00"
+								},
+								{
+									"key": "space_type",
+									"value": "",
+									"description": "classroom, lab, auditorium, meeting_room, library, storage, other"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Check Space Availability",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"space_id\": 1,\n    \"start_datetime\": \"2024-11-20 09:00:00\",\n    \"end_datetime\": \"2024-11-20 11:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations/check-availability",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", "check-availability"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Incidents",
+			"item": [
+				{
+					"name": "List Incidents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents?per_page=15&status=&priority=&equipment_id=",
+							"host": ["{{base_url}}"],
+							"path": ["incidents"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "reportado, en_revision, en_progreso, resuelto, cerrado"
+								},
+								{
+									"key": "priority",
+									"value": "",
+									"description": "baja, media, alta, critica"
+								},
+								{
+									"key": "equipment_id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Incident by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Incident",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"equipment_id\": 1,\n    \"title\": \"Equipo no enciende\",\n    \"description\": \"Al presionar el botón de encendido, el equipo no responde\",\n    \"priority\": \"alta\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/incidents",
+							"host": ["{{base_url}}"],
+							"path": ["incidents"]
+						}
+					}
+				},
+				{
+					"name": "Update Incident",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Equipo no enciende - Actualizado\",\n    \"priority\": \"critica\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/incidents/:id",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Start Review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/start-review",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "start-review"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Start Progress",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/start-progress",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "start-progress"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Resolve Incident",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resolution_notes\": \"Se reemplazó la fuente de poder y el equipo funciona correctamente\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/resolve",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "resolve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Close Incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/close",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "close"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Assign Incident",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"assigned_to\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/assign",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "assign"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Incidents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/my-incidents",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", "my-incidents"]
+						}
+					}
+				},
+				{
+					"name": "Get Assigned Incidents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/assigned",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", "assigned"]
+						}
+					}
+				},
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", "statistics"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Spaces",
+			"item": [
+				{
+					"name": "List Spaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces?per_page=15&search=&space_type=&status=&building=&floor=&min_capacity=",
+							"host": ["{{base_url}}"],
+							"path": ["spaces"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "space_type",
+									"value": "",
+									"description": "classroom, lab, auditorium, meeting_room, library, storage, other"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "available, unavailable, maintenance, reserved"
+								},
+								{
+									"key": "building",
+									"value": ""
+								},
+								{
+									"key": "floor",
+									"value": ""
+								},
+								{
+									"key": "min_capacity",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Space by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/:id",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Space",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"LAB-101\",\n    \"name\": \"Laboratorio de Cómputo\",\n    \"building\": \"Edificio A\",\n    \"floor\": \"1\",\n    \"location_description\": \"Ala este, frente a la biblioteca\",\n    \"capacity\": 30,\n    \"space_type\": \"lab\",\n    \"description\": \"Laboratorio equipado con 30 computadoras\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/spaces",
+							"host": ["{{base_url}}"],
+							"path": ["spaces"]
+						}
+					}
+				},
+				{
+					"name": "Update Space",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laboratorio de Cómputo Actualizado\",\n    \"capacity\": 35\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/spaces/:id",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Space",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/:id",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Available",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/:id/mark-available",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id", "mark-available"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Unavailable",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/:id/mark-unavailable",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id", "mark-unavailable"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark as Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/:id/mark-maintenance",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", ":id", "mark-maintenance"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Available Spaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/available",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", "available"]
+						}
+					}
+				},
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", "statistics"]
+						}
+					}
+				},
+				{
+					"name": "Get Buildings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/buildings",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", "buildings"]
+						}
+					}
+				},
+				{
+					"name": "Get Floors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spaces/floors",
+							"host": ["{{base_url}}"],
+							"path": ["spaces", "floors"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
