@@ -17,48 +17,39 @@ class CreateReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'space_id' => [
+            'equipment_id' => [
                 'required',
                 'integer',
-                Rule::exists('spaces', 'id')->where('status', 'available'),
+                Rule::exists('equipment', 'id')->whereNull('deleted_at'),
             ],
-            'start_datetime' => [
+            'start_date' => [
                 'required',
                 'date',
-                'after:now',
+                'after:today',
             ],
-            'end_datetime' => [
+            'end_date' => [
                 'required',
                 'date',
-                'after:start_datetime',
-                function ($attribute, $value, $fail) {
-                    $start = $this->input('start_datetime');
-                    $duration = \Carbon\Carbon::parse($start)->diffInHours($value);
-                    $maxHours = config('sigabe.reservations.max_hours_per_booking');
-
-                    if ($duration > $maxHours) {
-                        $fail("La reserva no puede exceder {$maxHours} horas.");
-                    }
-                },
+                'after:start_date',
             ],
-            'purpose' => [
-                'required',
+            'notes' => [
+                'nullable',
                 'string',
-                'max:500',
-            ],
-            'attendees_count' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:200',
+                'max:1000',
             ],
         ];
     }
 
-    protected function prepareForValidation(): void
+    public function messages(): array
     {
-        $this->merge([
-            'purpose' => strip_tags($this->purpose ?? ''),
-        ]);
+        return [
+            'equipment_id.required' => 'El equipo es requerido',
+            'equipment_id.exists' => 'El equipo seleccionado no existe',
+            'start_date.required' => 'La fecha de inicio es requerida',
+            'start_date.after' => 'La fecha de inicio debe ser posterior a hoy',
+            'end_date.required' => 'La fecha de fin es requerida',
+            'end_date.after' => 'La fecha de fin debe ser posterior a la fecha de inicio',
+            'notes.max' => 'Las notas no pueden exceder 1000 caracteres',
+        ];
     }
 }

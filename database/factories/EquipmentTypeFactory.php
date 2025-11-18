@@ -11,6 +11,8 @@ class EquipmentTypeFactory extends Factory
 {
     protected $model = EquipmentType::class;
 
+    private static int $counter = 0;
+
     public function definition(): array
     {
         $types = [
@@ -23,10 +25,11 @@ class EquipmentTypeFactory extends Factory
         ];
 
         $type = fake()->randomElement($types);
+        self::$counter++;
 
         return [
-            'name' => $type['name'],
-            'slug' => \Illuminate\Support\Str::slug($type['name']),
+            'name' => $type['name'] . ' ' . self::$counter,
+            'slug' => \Illuminate\Support\Str::slug($type['name']) . '-' . self::$counter,
             'description' => fake()->sentence(),
             'icon' => $type['icon'],
             'requires_training' => fake()->boolean(30),

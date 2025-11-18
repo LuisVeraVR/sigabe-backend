@@ -11,6 +11,8 @@ class EquipmentBrandFactory extends Factory
 {
     protected $model = EquipmentBrand::class;
 
+    private static int $counter = 0;
+
     public function definition(): array
     {
         $brands = [
@@ -23,10 +25,11 @@ class EquipmentBrandFactory extends Factory
         ];
 
         $brand = fake()->randomElement($brands);
+        self::$counter++;
 
         return [
-            'name' => $brand['name'],
-            'slug' => \Illuminate\Support\Str::slug($brand['name']),
+            'name' => $brand['name'] . ' ' . self::$counter,
+            'slug' => \Illuminate\Support\Str::slug($brand['name']) . '-' . self::$counter,
             'logo_url' => null,
             'website' => 'https://www.' . strtolower($brand['name']) . '.com',
             'country' => $brand['country'],

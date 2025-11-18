@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\V1\Equipment\EquipmentController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentMaintenanceController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentTypeController;
 use App\Http\Controllers\Api\V1\Equipment\EquipmentBrandController;
+use App\Http\Controllers\Api\V1\Loans\LoanController;
+use App\Http\Controllers\Api\V1\Reservations\ReservationController;
+use App\Http\Controllers\Api\V1\Incidents\IncidentController;
+use App\Http\Controllers\Api\V1\Spaces\SpaceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -206,6 +210,261 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{id}', [EquipmentBrandController::class, 'destroy'])
                 ->middleware('permission:settings.edit')
                 ->name('equipment-brands.destroy');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Préstamos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('loans')->group(function () {
+            // Listar préstamos
+            Route::get('/', [LoanController::class, 'index'])
+                ->middleware('permission:loans.view')
+                ->name('loans.index');
+
+            // Ver detalle de préstamo
+            Route::get('/{id}', [LoanController::class, 'show'])
+                ->middleware('permission:loans.view')
+                ->name('loans.show');
+
+            // Crear solicitud de préstamo
+            Route::post('/', [LoanController::class, 'store'])
+                ->middleware('permission:loans.create')
+                ->name('loans.store');
+
+            // Aprobar préstamo
+            Route::post('/{id}/approve', [LoanController::class, 'approve'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.approve');
+
+            // Rechazar préstamo
+            Route::post('/{id}/reject', [LoanController::class, 'reject'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.reject');
+
+            // Devolver equipo
+            Route::post('/{id}/return', [LoanController::class, 'return'])
+                ->middleware('permission:loans.return')
+                ->name('loans.return');
+
+            // Vistas especiales
+            Route::get('/me/active', [LoanController::class, 'myLoans'])
+                ->name('loans.my-loans');
+
+            Route::get('/pending/list', [LoanController::class, 'pending'])
+                ->middleware('permission:loans.approve')
+                ->name('loans.pending');
+
+            Route::get('/overdue/list', [LoanController::class, 'overdue'])
+                ->middleware('permission:loans.view')
+                ->name('loans.overdue');
+
+            // Estadísticas
+            Route::get('/stats/summary', [LoanController::class, 'statistics'])
+                ->middleware('permission:loans.view')
+                ->name('loans.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Reservas
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('reservations')->group(function () {
+            // Listar reservas
+            Route::get('/', [ReservationController::class, 'index'])
+                ->middleware('permission:reservations.view')
+                ->name('reservations.index');
+
+            // Ver detalle de reserva
+            Route::get('/{id}', [ReservationController::class, 'show'])
+                ->middleware('permission:reservations.view')
+                ->name('reservations.show');
+
+            // Crear solicitud de reserva
+            Route::post('/', [ReservationController::class, 'store'])
+                ->middleware('permission:reservations.create')
+                ->name('reservations.store');
+
+            // Aprobar reserva
+            Route::post('/{id}/approve', [ReservationController::class, 'approve'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.approve');
+
+            // Rechazar reserva
+            Route::post('/{id}/reject', [ReservationController::class, 'reject'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.reject');
+
+            // Cancelar reserva
+            Route::post('/{id}/cancel', [ReservationController::class, 'cancel'])
+                ->name('reservations.cancel');
+
+            // Activar reserva
+            Route::post('/{id}/activate', [ReservationController::class, 'activate'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.activate');
+
+            // Completar reserva
+            Route::post('/{id}/complete', [ReservationController::class, 'complete'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.complete');
+
+            // Convertir a préstamo
+            Route::post('/{id}/convert-to-loan', [ReservationController::class, 'convertToLoan'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.convert-to-loan');
+
+            // Eliminar reserva
+            Route::delete('/{id}', [ReservationController::class, 'destroy'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.destroy');
+
+            // Vistas especiales
+            Route::get('/me/list', [ReservationController::class, 'myReservations'])
+                ->name('reservations.my-reservations');
+
+            Route::get('/pending/list', [ReservationController::class, 'pending'])
+                ->middleware('permission:reservations.approve')
+                ->name('reservations.pending');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Incidentes
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('incidents')->group(function () {
+            // Listar incidentes
+            Route::get('/', [IncidentController::class, 'index'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.index');
+
+            // Ver detalle de incidente
+            Route::get('/{id}', [IncidentController::class, 'show'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.show');
+
+            // Crear incidente
+            Route::post('/', [IncidentController::class, 'store'])
+                ->middleware('permission:incidents.create')
+                ->name('incidents.store');
+
+            // Asignar incidente
+            Route::post('/{id}/assign', [IncidentController::class, 'assign'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.assign');
+
+            // Desasignar incidente
+            Route::post('/{id}/unassign', [IncidentController::class, 'unassign'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.unassign');
+
+            // Iniciar reparación
+            Route::post('/{id}/start-repair', [IncidentController::class, 'startRepair'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.start-repair');
+
+            // Resolver incidente
+            Route::post('/{id}/resolve', [IncidentController::class, 'resolve'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.resolve');
+
+            // Cerrar incidente
+            Route::post('/{id}/close', [IncidentController::class, 'close'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.close');
+
+            // Reabrir incidente
+            Route::post('/{id}/reopen', [IncidentController::class, 'reopen'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.reopen');
+
+            // Eliminar incidente
+            Route::delete('/{id}', [IncidentController::class, 'destroy'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.destroy');
+
+            // Vistas especiales
+            Route::get('/active/list', [IncidentController::class, 'active'])
+                ->middleware('permission:incidents.view')
+                ->name('incidents.active');
+
+            Route::get('/me/list', [IncidentController::class, 'myIncidents'])
+                ->name('incidents.my-incidents');
+
+            Route::get('/assigned-to-me/list', [IncidentController::class, 'assignedToMe'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.assigned-to-me');
+
+            Route::get('/unassigned/list', [IncidentController::class, 'unassigned'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.unassigned');
+
+            // Estadísticas
+            Route::get('/stats/summary', [IncidentController::class, 'statistics'])
+                ->middleware('permission:incidents.resolve')
+                ->name('incidents.statistics');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Spaces (Espacios) - Gestión de espacios físicos
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('spaces')->group(function () {
+            // CRUD básico
+            Route::get('/', [SpaceController::class, 'index'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.index');
+
+            Route::get('/{id}', [SpaceController::class, 'show'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.show');
+
+            Route::post('/', [SpaceController::class, 'store'])
+                ->middleware('permission:spaces.create')
+                ->name('spaces.store');
+
+            Route::put('/{id}', [SpaceController::class, 'update'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.update');
+
+            Route::delete('/{id}', [SpaceController::class, 'destroy'])
+                ->middleware('permission:spaces.delete')
+                ->name('spaces.destroy');
+
+            // Gestión de estados
+            Route::post('/{id}/mark-available', [SpaceController::class, 'markAsAvailable'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-available');
+
+            Route::post('/{id}/mark-unavailable', [SpaceController::class, 'markAsUnavailable'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-unavailable');
+
+            Route::post('/{id}/mark-maintenance', [SpaceController::class, 'markAsInMaintenance'])
+                ->middleware('permission:spaces.edit')
+                ->name('spaces.mark-maintenance');
+
+            // Vistas especiales
+            Route::get('/available/list', [SpaceController::class, 'available'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.available');
+
+            // Estadísticas y utilidades
+            Route::get('/stats/summary', [SpaceController::class, 'statistics'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.statistics');
+
+            Route::get('/utilities/buildings', [SpaceController::class, 'buildings'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.buildings');
+
+            Route::get('/utilities/floors', [SpaceController::class, 'floors'])
+                ->middleware('permission:spaces.view')
+                ->name('spaces.floors');
         });
     });
 });

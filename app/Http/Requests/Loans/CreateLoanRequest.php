@@ -17,25 +17,15 @@ class CreateLoanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
+            'equipment_id' => [
                 'required',
                 'integer',
-                Rule::exists('users', 'id')->where('status', 'active'),
-            ],
-            'loanable_type' => [
-                'required',
-                'string',
-                Rule::in(['equipment', 'catalog']),
-            ],
-            'loanable_id' => [
-                'required',
-                'integer',
+                Rule::exists('equipment', 'id'),
             ],
             'expected_return_date' => [
                 'required',
                 'date',
                 'after:today',
-                'before:' . now()->addDays(config('sigabe.loans.default_duration_days') + 1)->toDateString(),
             ],
             'notes' => [
                 'nullable',
@@ -48,15 +38,20 @@ class CreateLoanRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'expected_return_date.after' => 'La fecha de devolución debe ser posterior a hoy.',
-            'expected_return_date.before' => 'La fecha de devolución no puede exceder ' . config('sigabe.loans.default_duration_days') . ' días.',
+            'equipment_id.required' => 'Debe seleccionar un equipo',
+            'equipment_id.exists' => 'El equipo seleccionado no existe',
+            'expected_return_date.required' => 'Debe especificar la fecha de devolución esperada',
+            'expected_return_date.after' => 'La fecha de devolución debe ser futura',
+            'notes.max' => 'Las notas no pueden exceder 500 caracteres',
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'notes' => strip_tags($this->notes ?? ''),
-        ]);
+        if ($this->has('notes')) {
+            $this->merge([
+                'notes' => strip_tags($this->notes ?? ''),
+            ]);
+        }
     }
 }

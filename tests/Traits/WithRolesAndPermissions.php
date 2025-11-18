@@ -142,12 +142,17 @@ trait WithRolesAndPermissions
             'equipment.view',
             'equipment.create',
             'equipment.edit',
-            'equipment.delete', // ← AGREGAR ESTE PERMISO
+            'equipment.delete',
             'incidents.view',
             'incidents.create',
             'incidents.resolve',
             'loans.view',
+            'loans.create',
+            'loans.approve',
             'loans.return',
+            'reservations.view',
+            'reservations.create',
+            'reservations.approve',
             'spaces.view',
         ];
 
@@ -184,6 +189,7 @@ trait WithRolesAndPermissions
             'loans.create',
             'reservations.view',
             'reservations.create',
+            'incidents.view',
             'incidents.create',
         ];
 

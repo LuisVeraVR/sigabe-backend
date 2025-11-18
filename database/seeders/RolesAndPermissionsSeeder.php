@@ -165,6 +165,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Préstamos (gestión operativa)
             'loans.view',
+            'loans.create',
+            'loans.approve',
             'loans.return',
 
             // Espacios (solo ver)
