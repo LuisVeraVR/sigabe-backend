@@ -11,6 +11,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -65,6 +66,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->api(prepend: [
+            \App\Http\Middleware\ForceJsonResponse::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 
         ]);
@@ -110,6 +112,17 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'No tiene autorización para realizar esta acción.',
                     'error' => 'Forbidden',
                 ], 403);
+            }
+        });
+
+        // Manejar excepciones de ruta no encontrada (cuando intenta redirigir a 'login')
+        $exceptions->render(function (RouteNotFoundException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No autenticado. Por favor, inicie sesión para continuar.',
+                    'error' => 'Unauthenticated',
+                ], 401);
             }
         });
     })->create();
