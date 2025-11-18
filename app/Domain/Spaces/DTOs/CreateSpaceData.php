@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Spaces\DTOs;
 
+use App\Domain\Spaces\Enums\SpaceStatus;
 use App\Domain\Spaces\Enums\SpaceType;
 
 readonly class CreateSpaceData
@@ -16,6 +17,7 @@ readonly class CreateSpaceData
         public ?string $locationDescription = null,
         public ?int $capacity = null,
         public SpaceType $spaceType = SpaceType::CLASSROOM,
+        public SpaceStatus $status = SpaceStatus::AVAILABLE,
         public ?string $description = null,
     ) {}
 
@@ -29,6 +31,7 @@ readonly class CreateSpaceData
             'location_description' => $this->locationDescription,
             'capacity' => $this->capacity,
             'space_type' => $this->spaceType->value,
+            'status' => $this->status->value,
             'description' => $this->description,
         ];
     }
