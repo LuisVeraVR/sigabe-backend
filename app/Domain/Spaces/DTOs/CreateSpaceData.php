@@ -28,7 +28,7 @@ readonly class CreateSpaceData
             'floor' => $this->floor,
             'location_description' => $this->locationDescription,
             'capacity' => $this->capacity,
-            'space_type' => $this->spaceType,
+            'space_type' => $this->spaceType->value,
             'description' => $this->description,
         ];
     }

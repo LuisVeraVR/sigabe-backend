@@ -30,8 +30,8 @@ readonly class UpdateSpaceData
             'floor' => $this->floor,
             'location_description' => $this->locationDescription,
             'capacity' => $this->capacity,
-            'space_type' => $this->spaceType,
-            'status' => $this->status,
+            'space_type' => $this->spaceType?->value,
+            'status' => $this->status?->value,
             'description' => $this->description,
         ], fn ($value) => $value !== null);
     }
