@@ -8,6 +8,9 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -77,5 +80,36 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Manejar excepciones de autenticación para APIs
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No autenticado. Por favor, inicie sesión para continuar.',
+                    'error' => 'Unauthenticated',
+                ], 401);
+            }
+        });
+
+        // Manejar excepciones de autorización (permisos) para APIs
+        $exceptions->render(function (UnauthorizedException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para realizar esta acción.',
+                    'error' => 'Forbidden',
+                ], 403);
+            }
+        });
+
+        // Manejar excepciones de autorización generales
+        $exceptions->render(function (AuthorizationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene autorización para realizar esta acción.',
+                    'error' => 'Forbidden',
+                ], 403);
+            }
+        });
     })->create();
