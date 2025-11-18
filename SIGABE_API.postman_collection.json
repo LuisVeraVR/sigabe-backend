@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "sigabe-backend-api",
-		"name": "SIGABE Backend API",
-		"description": "Sistema Integral de Gestión Administrativa de Biblioteca Escolar - API REST",
+		"name": "SIGABE Backend API - Complete Collection",
+		"description": "Sistema Integral de Gestión Administrativa de Biblioteca Escolar - Colección Completa de API REST\n\nIncluye todos los módulos:\n- Health Check\n- Authentication\n- Equipment\n- Equipment Maintenance\n- Equipment Types\n- Equipment Brands\n- Loans\n- Reservations\n- Incidents\n- Spaces",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -29,6 +29,134 @@
 	],
 	"item": [
 		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8000",
+							"path": ["api", "health"]
+						},
+						"description": "Verifica el estado de salud de la API (sin autenticación)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\",\n    \"device_name\": \"Postman Client\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Inicia sesión y obtiene un token de acceso"
+					}
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"email\": \"juan.perez@example.com\",\n    \"password\": \"password123\",\n    \"document_type\": \"CC\",\n    \"document_number\": \"1234567890\",\n    \"phone\": \"+57 300 1234567\",\n    \"role\": \"student\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Registra un nuevo usuario (requiere permiso users.create)"
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Obtiene información del usuario autenticado actual"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Cierra la sesión actual"
+					}
+				},
+				{
+					"name": "Logout All Sessions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/logout-all",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "logout-all"]
+						},
+						"description": "Cierra todas las sesiones del usuario"
+					}
+				}
+			]
+		},
+		{
 			"name": "Equipment",
 			"item": [
 				{
@@ -37,7 +165,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/equipment?per_page=15&search=&status=&equipment_type=",
+							"raw": "{{base_url}}/equipment?per_page=15&search=&type_id=&brand_id=&status=&condition=&available=&under_warranty=&sort_by=created_at&sort_order=desc",
 							"host": ["{{base_url}}"],
 							"path": ["equipment"],
 							"query": [
@@ -50,17 +178,47 @@
 									"value": ""
 								},
 								{
-									"key": "status",
+									"key": "type_id",
 									"value": "",
-									"description": "disponible, prestado, mantenimiento, baja"
+									"description": "ID del tipo de equipo"
 								},
 								{
-									"key": "equipment_type",
+									"key": "brand_id",
 									"value": "",
-									"description": "laptop, proyector, tablet, camara, audio, red, otros"
+									"description": "ID de la marca"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "available, on_loan, reserved, maintenance, damaged, retired"
+								},
+								{
+									"key": "condition",
+									"value": "",
+									"description": "good, fair, poor"
+								},
+								{
+									"key": "available",
+									"value": "",
+									"description": "true/false"
+								},
+								{
+									"key": "under_warranty",
+									"value": "",
+									"description": "true/false"
+								},
+								{
+									"key": "sort_by",
+									"value": "created_at"
+								},
+								{
+									"key": "sort_order",
+									"value": "desc",
+									"description": "asc/desc"
 								}
 							]
-						}
+						},
+						"description": "Lista todos los equipos con filtros y paginación"
 					}
 				},
 				{
@@ -78,7 +236,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Obtiene detalles de un equipo específico"
 					}
 				},
 				{
@@ -93,13 +252,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"code\": \"LAP-001\",\n    \"name\": \"Laptop Dell Latitude\",\n    \"equipment_type\": \"laptop\",\n    \"brand\": \"Dell\",\n    \"model\": \"Latitude 5420\",\n    \"serial_number\": \"SN123456789\",\n    \"acquisition_date\": \"2024-01-15\",\n    \"description\": \"Laptop para préstamo estudiantil\"\n}"
+							"raw": "{\n    \"equipment_type_id\": 1,\n    \"equipment_brand_id\": 1,\n    \"name\": \"Laptop Dell Latitude 5420\",\n    \"model\": \"Latitude 5420\",\n    \"serial_number\": \"SN123456789\",\n    \"asset_code\": \"LAP-001\",\n    \"purchase_date\": \"2024-01-15\",\n    \"purchase_cost\": 1500.00,\n    \"supplier\": \"Dell Colombia\",\n    \"warranty_expiration_date\": \"2027-01-15\",\n    \"specifications\": {\n        \"processor\": \"Intel Core i7\",\n        \"ram\": \"16GB\",\n        \"storage\": \"512GB SSD\"\n    },\n    \"condition\": \"good\",\n    \"status\": \"available\",\n    \"current_space_id\": 1,\n    \"requires_accessories\": [\"Cargador\", \"Mouse\"],\n    \"notes\": \"Laptop para préstamo estudiantil\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/equipment",
 							"host": ["{{base_url}}"],
 							"path": ["equipment"]
-						}
+						},
+						"description": "Crea un nuevo equipo"
 					}
 				},
 				{
@@ -114,7 +274,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Laptop Dell Latitude Actualizada\",\n    \"description\": \"Laptop actualizada con más RAM\"\n}"
+							"raw": "{\n    \"name\": \"Laptop Dell Latitude Actualizada\",\n    \"condition\": \"fair\",\n    \"notes\": \"Laptop actualizada con más RAM\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/equipment/:id",
@@ -126,7 +286,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Actualiza un equipo existente"
 					}
 				},
 				{
@@ -144,73 +305,576 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Elimina un equipo (no se puede eliminar si está en préstamo)"
 					}
 				},
 				{
-					"name": "Mark as Available",
+					"name": "Change Equipment Status",
 					"request": {
-						"method": "POST",
-						"header": [],
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"maintenance\",\n    \"reason\": \"Equipo requiere limpieza y actualización de software\"\n}"
+						},
 						"url": {
-							"raw": "{{base_url}}/equipment/:id/mark-available",
+							"raw": "{{base_url}}/equipment/:id/status",
 							"host": ["{{base_url}}"],
-							"path": ["equipment", ":id", "mark-available"],
+							"path": ["equipment", ":id", "status"],
 							"variable": [
 								{
 									"key": "id",
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Cambia el estado de un equipo: available, on_loan, reserved, maintenance, damaged, retired"
 					}
 				},
 				{
-					"name": "Mark as Maintenance",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/equipment/:id/mark-maintenance",
-							"host": ["{{base_url}}"],
-							"path": ["equipment", ":id", "mark-maintenance"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Mark as Decommissioned",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/equipment/:id/mark-decommissioned",
-							"host": ["{{base_url}}"],
-							"path": ["equipment", ":id", "mark-decommissioned"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Get Statistics",
+					"name": "Check Equipment Availability",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/equipment/statistics",
+							"raw": "{{base_url}}/equipment/:id/availability",
 							"host": ["{{base_url}}"],
-							"path": ["equipment", "statistics"]
-						}
+							"path": ["equipment", ":id", "availability"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Verifica si un equipo está disponible para préstamo"
+					}
+				},
+				{
+					"name": "Get Equipment History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/:id/history",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", ":id", "history"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Obtiene el historial de cambios de un equipo"
+					}
+				},
+				{
+					"name": "Get Equipment Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment/stats/summary",
+							"host": ["{{base_url}}"],
+							"path": ["equipment", "stats", "summary"]
+						},
+						"description": "Obtiene estadísticas generales de equipos"
+					}
+				}
+			]
+		},
+		{
+			"name": "Equipment Maintenance",
+			"item": [
+				{
+					"name": "List Maintenances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances?per_page=15&equipment_id=&maintenance_type=&status=&priority=&technician_id=&from_date=&to_date=&sort_by=scheduled_date&sort_order=desc",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances"],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "equipment_id",
+									"value": ""
+								},
+								{
+									"key": "maintenance_type",
+									"value": "",
+									"description": "preventive, corrective, predictive, emergency"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"description": "scheduled, in_progress, completed, cancelled"
+								},
+								{
+									"key": "priority",
+									"value": "",
+									"description": "low, medium, high, critical"
+								},
+								{
+									"key": "technician_id",
+									"value": ""
+								},
+								{
+									"key": "from_date",
+									"value": ""
+								},
+								{
+									"key": "to_date",
+									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": "scheduled_date"
+								},
+								{
+									"key": "sort_order",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Lista todos los mantenimientos con filtros"
+					}
+				},
+				{
+					"name": "Get Maintenance by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances/:id",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Obtiene detalles de un mantenimiento"
+					}
+				},
+				{
+					"name": "Create Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"equipment_id\": 1,\n    \"maintenance_type\": \"preventive\",\n    \"title\": \"Mantenimiento preventivo mensual\",\n    \"description\": \"Limpieza, actualización de software y revisión general\",\n    \"scheduled_date\": \"2024-12-01\",\n    \"priority\": \"medium\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/maintenances",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances"]
+						},
+						"description": "Programa un nuevo mantenimiento"
+					}
+				},
+				{
+					"name": "Update Maintenance",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scheduled_date\": \"2024-12-05\",\n    \"priority\": \"high\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/maintenances/:id",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Actualiza un mantenimiento (no se puede actualizar si ya está completado)"
+					}
+				},
+				{
+					"name": "Start Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances/:id/start",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", ":id", "start"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Inicia un mantenimiento programado"
+					}
+				},
+				{
+					"name": "Complete Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"actions_taken\": \"Se realizó limpieza completa, actualización de sistema operativo y drivers. Se verificó funcionamiento de todos los componentes.\",\n    \"cost\": 50000,\n    \"parts_replaced\": [\"Pasta térmica\", \"Batería CMOS\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/maintenances/:id/complete",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", ":id", "complete"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Completa un mantenimiento"
+					}
+				},
+				{
+					"name": "Cancel Maintenance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"El equipo fue dado de baja\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/maintenances/:id/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", ":id", "cancel"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cancela un mantenimiento"
+					}
+				},
+				{
+					"name": "Get Upcoming Maintenances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances/upcoming/list?days=7",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", "upcoming", "list"],
+							"query": [
+								{
+									"key": "days",
+									"value": "7",
+									"description": "Próximos N días"
+								}
+							]
+						},
+						"description": "Obtiene mantenimientos próximos"
+					}
+				},
+				{
+					"name": "Get Overdue Maintenances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances/overdue/list",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", "overdue", "list"]
+						},
+						"description": "Obtiene mantenimientos vencidos"
+					}
+				},
+				{
+					"name": "Get Maintenance Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/maintenances/stats/summary",
+							"host": ["{{base_url}}"],
+							"path": ["maintenances", "stats", "summary"]
+						},
+						"description": "Obtiene estadísticas de mantenimientos"
+					}
+				}
+			]
+		},
+		{
+			"name": "Equipment Types",
+			"item": [
+				{
+					"name": "List Equipment Types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-types?active_only=true&include_counts=true",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-types"],
+							"query": [
+								{
+									"key": "active_only",
+									"value": "true",
+									"description": "Solo tipos activos"
+								},
+								{
+									"key": "include_counts",
+									"value": "true",
+									"description": "Incluir conteo de equipos"
+								}
+							]
+						},
+						"description": "Lista todos los tipos de equipo"
+					}
+				},
+				{
+					"name": "Get Equipment Type by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-types/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-types", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Obtiene detalles de un tipo de equipo"
+					}
+				},
+				{
+					"name": "Create Equipment Type",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop\",\n    \"description\": \"Computadoras portátiles\",\n    \"icon\": \"laptop\",\n    \"requires_training\": false,\n    \"average_loan_duration_hours\": 168\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment-types",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-types"]
+						},
+						"description": "Crea un nuevo tipo de equipo (requiere settings.edit)"
+					}
+				},
+				{
+					"name": "Update Equipment Type",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Computadoras portátiles para préstamo estudiantil\",\n    \"average_loan_duration_hours\": 120\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment-types/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-types", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Actualiza un tipo de equipo"
+					}
+				},
+				{
+					"name": "Delete Equipment Type",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-types/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-types", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Elimina un tipo de equipo (no se puede eliminar si tiene equipos asociados)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Equipment Brands",
+			"item": [
+				{
+					"name": "List Equipment Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-brands?active_only=true&include_counts=true",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-brands"],
+							"query": [
+								{
+									"key": "active_only",
+									"value": "true",
+									"description": "Solo marcas activas"
+								},
+								{
+									"key": "include_counts",
+									"value": "true",
+									"description": "Incluir conteo de equipos"
+								}
+							]
+						},
+						"description": "Lista todas las marcas de equipo"
+					}
+				},
+				{
+					"name": "Get Equipment Brand by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-brands/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-brands", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Obtiene detalles de una marca"
+					}
+				},
+				{
+					"name": "Create Equipment Brand",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dell\",\n    \"logo_url\": \"https://www.dell.com/logo.png\",\n    \"website\": \"https://www.dell.com\",\n    \"country\": \"Estados Unidos\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment-brands",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-brands"]
+						},
+						"description": "Crea una nueva marca (requiere settings.edit)"
+					}
+				},
+				{
+					"name": "Update Equipment Brand",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"logo_url\": \"https://www.dell.com/new-logo.png\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipment-brands/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-brands", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Actualiza una marca"
+					}
+				},
+				{
+					"name": "Delete Equipment Brand",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipment-brands/:id",
+							"host": ["{{base_url}}"],
+							"path": ["equipment-brands", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Elimina una marca (no se puede eliminar si tiene equipos asociados)"
 					}
 				}
 			]
@@ -224,7 +888,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/loans?per_page=15&status=&user_id=&equipment_id=",
+							"raw": "{{base_url}}/loans?per_page=15&status=&user_id=&equipment_id=&sort_by=created_at&sort_order=desc",
 							"host": ["{{base_url}}"],
 							"path": ["loans"],
 							"query": [
@@ -235,7 +899,7 @@
 								{
 									"key": "status",
 									"value": "",
-									"description": "pendiente, aprobado, activo, devuelto, rechazado, vencido"
+									"description": "pending, approved, returned, rejected, overdue"
 								},
 								{
 									"key": "user_id",
@@ -244,9 +908,18 @@
 								{
 									"key": "equipment_id",
 									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": "created_at"
+								},
+								{
+									"key": "sort_order",
+									"value": "desc"
 								}
 							]
-						}
+						},
+						"description": "Lista todos los préstamos"
 					}
 				},
 				{
@@ -264,7 +937,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Obtiene detalles de un préstamo"
 					}
 				},
 				{
@@ -279,29 +953,21 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"equipment_id\": 1,\n    \"loan_date\": \"2024-11-20\",\n    \"expected_return_date\": \"2024-11-27\",\n    \"notes\": \"Préstamo para proyecto de clase\"\n}"
+							"raw": "{\n    \"equipment_id\": 1,\n    \"expected_return_date\": \"2024-11-27\",\n    \"notes\": \"Préstamo para proyecto de clase de programación\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/loans",
 							"host": ["{{base_url}}"],
 							"path": ["loans"]
-						}
+						},
+						"description": "Crea una solicitud de préstamo"
 					}
 				},
 				{
 					"name": "Approve Loan",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"notes\": \"Aprobado para proyecto académico\"\n}"
-						},
+						"header": [],
 						"url": {
 							"raw": "{{base_url}}/loans/:id/approve",
 							"host": ["{{base_url}}"],
@@ -312,7 +978,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Aprueba un préstamo (requiere loans.approve)"
 					}
 				},
 				{
@@ -327,7 +994,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"notes\": \"Equipo no disponible en esas fechas\"\n}"
+							"raw": "{\n    \"rejection_reason\": \"Equipo no disponible en esas fechas\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/loans/:id/reject",
@@ -339,23 +1006,15 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Rechaza un préstamo (requiere loans.approve)"
 					}
 				},
 				{
-					"name": "Return Loan",
+					"name": "Return Equipment",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"return_date\": \"2024-11-25\",\n    \"condition\": \"En buen estado\"\n}"
-						},
+						"header": [],
 						"url": {
 							"raw": "{{base_url}}/loans/:id/return",
 							"host": ["{{base_url}}"],
@@ -366,31 +1025,34 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Registra la devolución de un equipo (requiere loans.return)"
 					}
 				},
 				{
-					"name": "Get My Loans",
+					"name": "Get My Active Loans",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/loans/my-loans",
+							"raw": "{{base_url}}/loans/me/active",
 							"host": ["{{base_url}}"],
-							"path": ["loans", "my-loans"]
-						}
+							"path": ["loans", "me", "active"]
+						},
+						"description": "Obtiene los préstamos activos del usuario actual"
 					}
 				},
 				{
-					"name": "Get Active Loans",
+					"name": "Get Pending Loans",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/loans/active",
+							"raw": "{{base_url}}/loans/pending/list",
 							"host": ["{{base_url}}"],
-							"path": ["loans", "active"]
-						}
+							"path": ["loans", "pending", "list"]
+						},
+						"description": "Obtiene préstamos pendientes de aprobación"
 					}
 				},
 				{
@@ -399,10 +1061,24 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/loans/overdue",
+							"raw": "{{base_url}}/loans/overdue/list",
 							"host": ["{{base_url}}"],
-							"path": ["loans", "overdue"]
-						}
+							"path": ["loans", "overdue", "list"]
+						},
+						"description": "Obtiene préstamos vencidos"
+					}
+				},
+				{
+					"name": "Get Loan Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/loans/stats/summary",
+							"host": ["{{base_url}}"],
+							"path": ["loans", "stats", "summary"]
+						},
+						"description": "Obtiene estadísticas de préstamos"
 					}
 				}
 			]
@@ -416,7 +1092,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/reservations?per_page=15&status=&user_id=&space_id=&start_date=&end_date=",
+							"raw": "{{base_url}}/reservations?per_page=15&status=&user_id=&equipment_id=&start_date=&end_date=",
 							"host": ["{{base_url}}"],
 							"path": ["reservations"],
 							"query": [
@@ -427,14 +1103,14 @@
 								{
 									"key": "status",
 									"value": "",
-									"description": "pendiente, aprobada, activa, completada, cancelada, rechazada"
+									"description": "pending, approved, active, completed, cancelled, rejected, expired"
 								},
 								{
 									"key": "user_id",
 									"value": ""
 								},
 								{
-									"key": "space_id",
+									"key": "equipment_id",
 									"value": ""
 								},
 								{
@@ -446,7 +1122,8 @@
 									"value": ""
 								}
 							]
-						}
+						},
+						"description": "Lista todas las reservaciones"
 					}
 				},
 				{
@@ -464,7 +1141,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Obtiene detalles de una reservación"
 					}
 				},
 				{
@@ -479,74 +1157,30 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"space_id\": 1,\n    \"start_datetime\": \"2024-11-20 09:00:00\",\n    \"end_datetime\": \"2024-11-20 11:00:00\",\n    \"purpose\": \"Reunión de equipo de proyecto\",\n    \"expected_attendees\": 15\n}"
+							"raw": "{\n    \"equipment_id\": 1,\n    \"start_date\": \"2024-11-25\",\n    \"end_date\": \"2024-11-27\",\n    \"notes\": \"Reserva para evento académico\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/reservations",
 							"host": ["{{base_url}}"],
 							"path": ["reservations"]
-						}
-					}
-				},
-				{
-					"name": "Update Reservation",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"end_datetime\": \"2024-11-20 12:00:00\",\n    \"expected_attendees\": 20\n}"
 						},
-						"url": {
-							"raw": "{{base_url}}/reservations/:id",
-							"host": ["{{base_url}}"],
-							"path": ["reservations", ":id"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Cancel Reservation",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"cancellation_reason\": \"Cambio de planes\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/reservations/:id/cancel",
-							"host": ["{{base_url}}"],
-							"path": ["reservations", ":id", "cancel"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
+						"description": "Crea una nueva reservación"
 					}
 				},
 				{
 					"name": "Approve Reservation",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"approved_start_date\": \"2024-11-25\"\n}"
+						},
 						"url": {
 							"raw": "{{base_url}}/reservations/:id/approve",
 							"host": ["{{base_url}}"],
@@ -557,7 +1191,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Aprueba una reservación"
 					}
 				},
 				{
@@ -572,7 +1207,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"rejection_reason\": \"Espacio no disponible\"\n}"
+							"raw": "{\n    \"rejection_reason\": \"Equipo no disponible en esas fechas\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/reservations/:id/reject",
@@ -584,25 +1219,55 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Rechaza una reservación"
 					}
 				},
 				{
-					"name": "Check-in Reservation",
+					"name": "Cancel Reservation",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cancellation_reason\": \"Ya no se necesita el equipo\"\n}"
+						},
 						"url": {
-							"raw": "{{base_url}}/reservations/:id/check-in",
+							"raw": "{{base_url}}/reservations/:id/cancel",
 							"host": ["{{base_url}}"],
-							"path": ["reservations", ":id", "check-in"],
+							"path": ["reservations", ":id", "cancel"],
 							"variable": [
 								{
 									"key": "id",
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Cancela una reservación"
+					}
+				},
+				{
+					"name": "Activate Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/activate",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "activate"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Activa una reservación aprobada"
 					}
 				},
 				{
@@ -620,7 +1285,27 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Completa una reservación"
+					}
+				},
+				{
+					"name": "Convert to Loan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/:id/convert-to-loan",
+							"host": ["{{base_url}}"],
+							"path": ["reservations", ":id", "convert-to-loan"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Convierte una reservación en un préstamo"
 					}
 				},
 				{
@@ -629,58 +1314,49 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/reservations/my-reservations",
+							"raw": "{{base_url}}/reservations/me/list?status=",
 							"host": ["{{base_url}}"],
-							"path": ["reservations", "my-reservations"]
-						}
+							"path": ["reservations", "me", "list"],
+							"query": [
+								{
+									"key": "status",
+									"value": ""
+								}
+							]
+						},
+						"description": "Obtiene las reservaciones del usuario actual"
 					}
 				},
 				{
-					"name": "Get Available Spaces",
+					"name": "Get Pending Reservations",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/reservations/available-spaces?start_datetime=2024-11-20 09:00:00&end_datetime=2024-11-20 11:00:00&space_type=",
+							"raw": "{{base_url}}/reservations/pending/list",
 							"host": ["{{base_url}}"],
-							"path": ["reservations", "available-spaces"],
-							"query": [
-								{
-									"key": "start_datetime",
-									"value": "2024-11-20 09:00:00"
-								},
-								{
-									"key": "end_datetime",
-									"value": "2024-11-20 11:00:00"
-								},
-								{
-									"key": "space_type",
-									"value": "",
-									"description": "classroom, lab, auditorium, meeting_room, library, storage, other"
-								}
-							]
-						}
+							"path": ["reservations", "pending", "list"]
+						},
+						"description": "Obtiene reservaciones pendientes de aprobación"
 					}
 				},
 				{
-					"name": "Check Space Availability",
+					"name": "Delete Reservation",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"space_id\": 1,\n    \"start_datetime\": \"2024-11-20 09:00:00\",\n    \"end_datetime\": \"2024-11-20 11:00:00\"\n}"
-						},
+						"method": "DELETE",
+						"header": [],
 						"url": {
-							"raw": "{{base_url}}/reservations/check-availability",
+							"raw": "{{base_url}}/reservations/:id",
 							"host": ["{{base_url}}"],
-							"path": ["reservations", "check-availability"]
-						}
+							"path": ["reservations", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Elimina una reservación"
 					}
 				}
 			]
@@ -694,7 +1370,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/incidents?per_page=15&status=&priority=&equipment_id=",
+							"raw": "{{base_url}}/incidents?per_page=15&status=&priority=&equipment_id=&reported_by=&assigned_to=&unassigned=",
 							"host": ["{{base_url}}"],
 							"path": ["incidents"],
 							"query": [
@@ -705,7 +1381,7 @@
 								{
 									"key": "status",
 									"value": "",
-									"description": "reportado, en_revision, en_progreso, resuelto, cerrado"
+									"description": "reportado, en_revision, en_reparacion, resuelto, cerrado"
 								},
 								{
 									"key": "priority",
@@ -715,9 +1391,23 @@
 								{
 									"key": "equipment_id",
 									"value": ""
+								},
+								{
+									"key": "reported_by",
+									"value": ""
+								},
+								{
+									"key": "assigned_to",
+									"value": ""
+								},
+								{
+									"key": "unassigned",
+									"value": "",
+									"description": "true/false"
 								}
 							]
-						}
+						},
+						"description": "Lista todos los incidentes"
 					}
 				},
 				{
@@ -735,7 +1425,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Obtiene detalles de un incidente"
 					}
 				},
 				{
@@ -750,121 +1441,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"equipment_id\": 1,\n    \"title\": \"Equipo no enciende\",\n    \"description\": \"Al presionar el botón de encendido, el equipo no responde\",\n    \"priority\": \"alta\"\n}"
+							"raw": "{\n    \"equipment_id\": 1,\n    \"title\": \"Equipo no enciende\",\n    \"description\": \"Al presionar el botón de encendido, el equipo no responde. Se escucha un pitido corto.\",\n    \"priority\": \"alta\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/incidents",
 							"host": ["{{base_url}}"],
 							"path": ["incidents"]
-						}
-					}
-				},
-				{
-					"name": "Update Incident",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"title\": \"Equipo no enciende - Actualizado\",\n    \"priority\": \"critica\"\n}"
 						},
-						"url": {
-							"raw": "{{base_url}}/incidents/:id",
-							"host": ["{{base_url}}"],
-							"path": ["incidents", ":id"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Start Review",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/incidents/:id/start-review",
-							"host": ["{{base_url}}"],
-							"path": ["incidents", ":id", "start-review"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Start Progress",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/incidents/:id/start-progress",
-							"host": ["{{base_url}}"],
-							"path": ["incidents", ":id", "start-progress"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Resolve Incident",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"resolution_notes\": \"Se reemplazó la fuente de poder y el equipo funciona correctamente\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/incidents/:id/resolve",
-							"host": ["{{base_url}}"],
-							"path": ["incidents", ":id", "resolve"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Close Incident",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/incidents/:id/close",
-							"host": ["{{base_url}}"],
-							"path": ["incidents", ":id", "close"],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
+						"description": "Reporta un nuevo incidente"
 					}
 				},
 				{
@@ -891,7 +1475,125 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Asigna un incidente a un técnico"
+					}
+				},
+				{
+					"name": "Unassign Incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/unassign",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "unassign"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Desasigna un incidente"
+					}
+				},
+				{
+					"name": "Start Repair",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/start-repair",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "start-repair"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Inicia la reparación de un incidente"
+					}
+				},
+				{
+					"name": "Resolve Incident",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resolution_summary\": \"Se reemplazó la fuente de poder y el equipo funciona correctamente\",\n    \"root_cause\": \"Fuente de poder dañada por sobrevoltaje\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/resolve",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "resolve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Marca un incidente como resuelto"
+					}
+				},
+				{
+					"name": "Close Incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/close",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "close"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cierra un incidente resuelto"
+					}
+				},
+				{
+					"name": "Reopen Incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id/reopen",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id", "reopen"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Reabre un incidente cerrado"
+					}
+				},
+				{
+					"name": "Get Active Incidents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/active/list",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", "active", "list"]
+						},
+						"description": "Obtiene incidentes activos"
 					}
 				},
 				{
@@ -900,34 +1602,69 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/incidents/my-incidents",
+							"raw": "{{base_url}}/incidents/me/list",
 							"host": ["{{base_url}}"],
-							"path": ["incidents", "my-incidents"]
-						}
+							"path": ["incidents", "me", "list"]
+						},
+						"description": "Obtiene incidentes reportados por el usuario actual"
 					}
 				},
 				{
-					"name": "Get Assigned Incidents",
+					"name": "Get Incidents Assigned to Me",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/incidents/assigned",
+							"raw": "{{base_url}}/incidents/assigned-to-me/list",
 							"host": ["{{base_url}}"],
-							"path": ["incidents", "assigned"]
-						}
+							"path": ["incidents", "assigned-to-me", "list"]
+						},
+						"description": "Obtiene incidentes asignados al usuario actual"
 					}
 				},
 				{
-					"name": "Get Statistics",
+					"name": "Get Unassigned Incidents",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/incidents/statistics",
+							"raw": "{{base_url}}/incidents/unassigned/list",
 							"host": ["{{base_url}}"],
-							"path": ["incidents", "statistics"]
-						}
+							"path": ["incidents", "unassigned", "list"]
+						},
+						"description": "Obtiene incidentes sin asignar"
+					}
+				},
+				{
+					"name": "Get Incident Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/stats/summary",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", "stats", "summary"]
+						},
+						"description": "Obtiene estadísticas de incidentes"
+					}
+				},
+				{
+					"name": "Delete Incident",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/incidents/:id",
+							"host": ["{{base_url}}"],
+							"path": ["incidents", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Elimina un incidente"
 					}
 				}
 			]
@@ -956,7 +1693,7 @@
 								{
 									"key": "space_type",
 									"value": "",
-									"description": "classroom, lab, auditorium, meeting_room, library, storage, other"
+									"description": "classroom, laboratory, conference_room, library, office, workshop, other"
 								},
 								{
 									"key": "status",
@@ -976,7 +1713,8 @@
 									"value": ""
 								}
 							]
-						}
+						},
+						"description": "Lista todos los espacios"
 					}
 				},
 				{
@@ -994,7 +1732,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Obtiene detalles de un espacio"
 					}
 				},
 				{
@@ -1009,13 +1748,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"code\": \"LAB-101\",\n    \"name\": \"Laboratorio de Cómputo\",\n    \"building\": \"Edificio A\",\n    \"floor\": \"1\",\n    \"location_description\": \"Ala este, frente a la biblioteca\",\n    \"capacity\": 30,\n    \"space_type\": \"lab\",\n    \"description\": \"Laboratorio equipado con 30 computadoras\"\n}"
+							"raw": "{\n    \"code\": \"LAB-101\",\n    \"name\": \"Laboratorio de Cómputo 1\",\n    \"building\": \"Edificio A\",\n    \"floor\": \"1\",\n    \"location_description\": \"Ala este, frente a la biblioteca\",\n    \"capacity\": 30,\n    \"space_type\": \"laboratory\",\n    \"description\": \"Laboratorio equipado con 30 computadoras de escritorio\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/spaces",
 							"host": ["{{base_url}}"],
 							"path": ["spaces"]
-						}
+						},
+						"description": "Crea un nuevo espacio"
 					}
 				},
 				{
@@ -1030,7 +1770,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Laboratorio de Cómputo Actualizado\",\n    \"capacity\": 35\n}"
+							"raw": "{\n    \"name\": \"Laboratorio de Cómputo 1 - Actualizado\",\n    \"capacity\": 35\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/spaces/:id",
@@ -1042,7 +1782,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Actualiza un espacio"
 					}
 				},
 				{
@@ -1060,7 +1801,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Elimina un espacio"
 					}
 				},
 				{
@@ -1078,7 +1820,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Marca un espacio como disponible"
 					}
 				},
 				{
@@ -1096,7 +1839,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Marca un espacio como no disponible"
 					}
 				},
 				{
@@ -1114,7 +1858,8 @@
 									"value": "1"
 								}
 							]
-						}
+						},
+						"description": "Marca un espacio en mantenimiento"
 					}
 				},
 				{
@@ -1123,22 +1868,24 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/spaces/available",
+							"raw": "{{base_url}}/spaces/available/list",
 							"host": ["{{base_url}}"],
-							"path": ["spaces", "available"]
-						}
+							"path": ["spaces", "available", "list"]
+						},
+						"description": "Obtiene espacios disponibles"
 					}
 				},
 				{
-					"name": "Get Statistics",
+					"name": "Get Space Statistics",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/spaces/statistics",
+							"raw": "{{base_url}}/spaces/stats/summary",
 							"host": ["{{base_url}}"],
-							"path": ["spaces", "statistics"]
-						}
+							"path": ["spaces", "stats", "summary"]
+						},
+						"description": "Obtiene estadísticas de espacios"
 					}
 				},
 				{
@@ -1147,10 +1894,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/spaces/buildings",
+							"raw": "{{base_url}}/spaces/utilities/buildings",
 							"host": ["{{base_url}}"],
-							"path": ["spaces", "buildings"]
-						}
+							"path": ["spaces", "utilities", "buildings"]
+						},
+						"description": "Obtiene lista de edificios"
 					}
 				},
 				{
@@ -1159,10 +1907,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/spaces/floors",
+							"raw": "{{base_url}}/spaces/utilities/floors",
 							"host": ["{{base_url}}"],
-							"path": ["spaces", "floors"]
-						}
+							"path": ["spaces", "utilities", "floors"]
+						},
+						"description": "Obtiene lista de pisos"
 					}
 				}
 			]
