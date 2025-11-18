@@ -46,15 +46,11 @@ class SpaceController extends Controller
         $perPage = (int) $request->input('per_page', 15);
         $spaces = $this->service->paginate($filters, $perPage);
 
-        return $this->successResponse(
-            data: SpaceResource::collection($spaces),
-            message: 'Espacios obtenidos exitosamente',
-            meta: [
-                'total' => $spaces->total(),
-                'per_page' => $spaces->perPage(),
-                'current_page' => $spaces->currentPage(),
-                'last_page' => $spaces->lastPage(),
-            ]
+        return $this->paginatedResponse(
+            $spaces->setCollection(
+                $spaces->getCollection()->map(fn ($item) => new SpaceResource($item))
+            ),
+            'Espacios obtenidos exitosamente'
         );
     }
 
